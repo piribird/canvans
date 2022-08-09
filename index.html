@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #canvas-wrapper {
+      width: 1000px;
+      height: 200px;
+      position: relative;
+      background-color: #4C4C4C;
+    }
+
+    .canvas {
+      height: 200px;
+      width: 1000px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-background-layer {
+      z-index: 1;
+    }
+
+    #canvas {
+      z-index: 2;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-wrapper">
+    <canvas id='canvas' class='canvas'></canvas>
+    <canvas id='canvas-background-layer' class='canvas'></canvas>
+  </div>
+
+  <div style="width: 1000px;padding-top: 20px;text-align: center">
+    <button id="play-button">시작/종료</button>
+  </div>
+
+
+  <script>
+    let continueAnimate = false;
+    const distance = 300;
+    const colors = {
+      normal: '54, 138, 255',
+      warning: '255, 228, 0',
+      error: '255, 0, 0'
+    }
+    const scale = window.devicePixelRatio;
+    const canvasWrapper = document.getElementById('canvas-wrapper');
+    const backgroundCanvas = document.getElementById('canvas-background-layer');
+    const playButton = document.getElementById('play-button');
+           
+    const mainCanvas = document.getElementById('canvas');
+
+    backgroundCanvas.width = 1000 * scale;
+    backgroundCanvas.height = 200 * scale;
+
+    const ctx = backgroundCanvas.getContext('2d');
+    ctx.scale(scale, scale);
+
+    const verticalBar = ctx.createLinearGradient(0, 80, 0, 180);
+    verticalBar.addColorStop(0, '#707070');
+    verticalBar.addColorStop(.5, '#CACACA');
+    verticalBar.addColorStop(1, '#707070');
+    ctx.fillStyle = verticalBar;
+    ctx.fillRect(50 + distance, 80, 1, 100);
+    ctx.fillRect(50 + distance * 2, 80, 1, 100);
+
+    const leftHorizontalBar = ctx.createLinearGradient(50, 0, 350, 0);
+    leftHorizontalBar.addColorStop(0, '#707070');
+    leftHorizontalBar.addColorStop(1, '#CACACA');
+    ctx.fillStyle = leftHorizontalBar;
+    ctx.fillRect(50, 130, distance, 3);
+    ctx.clearRect(50, 131, distance, 1);
+
+    const rightHorizontalBar = ctx.createLinearGradient(651, 0, 951, 0);
+    rightHorizontalBar.addColorStop(0, '#CACACA');
+    rightHorizontalBar.addColorStop(1, '#707070');
+    ctx.fillStyle = rightHorizontalBar;
+    ctx.fillRect(51 + distance * 2, 130, distance, 3);
+    ctx.clearRect(51 + distance * 2, 131, distance, 1);
+
+    mainCanvas.width = 1000 * scale;
+    mainCanvas.height = 200 * scale;
+
+    const offscreen = mainCanvas.transferControlToOffscreen();
+    
+
+    const worker = new Worker("./worker.js");
+    worker.postMessage({canvas: offscreen, scale: scale, playButton: playButton}, [offscreen, playButton]);    
+
+  </script>
+</body>
+</html>
