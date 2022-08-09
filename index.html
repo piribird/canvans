@@ -91,7 +91,7 @@
     
 
     const worker = new Worker("./worker.js");
-    worker.postMessage({canvas: offscreen, scale: scale, playButton: playButton}, [offscreen, playButton]);    
+    worker.postMessage({canvas: offscreen, scale: scale, playButton: playButton}, [offscreen]);    
 
   </script>
 </body>
